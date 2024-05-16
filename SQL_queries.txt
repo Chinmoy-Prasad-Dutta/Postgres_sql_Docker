@@ -1,0 +1,122 @@
+select * from public."Absenteeism_at_work" a
+left join public.compensation b
+on a."ID" = b."ID"
+left join public."Reasons" r
+on r."Number" = a."Reason for absence"
+
+
+---find the healthiest
+select * from public."Absenteeism_at_work"
+where "Social drinker" = 0 and "Social smoker" = 0
+and "Body mass index" < 25 and 
+"Absenteeism time in hours" < (select AVG("Absenteeism time in hours") from public."Absenteeism_at_work")
+
+---compensation rate increase for non_smokers/ budget 983226 dollars
+select count(*) as nonsmokers from public."Absenteeism_at_work"
+where "Social smoker" = 0
+
+--- optimize the query
+select
+		a."ID",
+		r."Reason",
+		case when a."Month of absence" in (12,1,2) then 'winter'
+			when a."Month of absence" in (3,4,5) then 'spring'
+			when a."Month of absence" in (6,7,8) then 'summer'
+			when a."Month of absence" in (9,10,11) then 'fall'
+			ELSE 'unknown' end as Season_Names,
+		a."Body mass index",
+		case when a."Body mass index" < 18.5 then 'underweight'
+			 when a."Body mass index" between 18.5 and 24.9 then 'healthy weight'
+			 when a."Body mass index" between 25 and 29.9 then 'overweight'
+			 when a."Body mass index" > 30 then 'obese'
+			 else 'Unknown' end as BMI_cat,
+		a."Month of absence",
+		a."Day of the week",
+		a."Transportation expense",
+		a."Education",
+		a."Son",
+		a."Social drinker",
+		a."Social smoker",
+		a."Pet",
+		a."Disciplinary failure",
+		a."Age",
+		a."Work load Average/day ",
+		a."Absenteeism time in hours"
+		
+from public."Absenteeism_at_work" a
+left join public.compensation b
+on a."ID" = b."ID"
+left join public."Reasons" r
+on r."Number" = a."Reason for absence"
+
+---create database wtith the above sql query
+
+CREATE OR REPLACE VIEW new_data AS
+select
+		a."ID",
+		r."Reason",
+		case when a."Month of absence" in (12,1,2) then 'winter'
+			when a."Month of absence" in (3,4,5) then 'spring'
+			when a."Month of absence" in (6,7,8) then 'summer'
+			when a."Month of absence" in (9,10,11) then 'fall'
+			ELSE 'unknown' end as Season_Names,
+		a."Body mass index",
+		case when a."Body mass index" < 18.5 then 'underweight'
+			 when a."Body mass index" between 18.5 and 24.9 then 'healthy weight'
+			 when a."Body mass index" between 25 and 29.9 then 'overweight'
+			 when a."Body mass index" > 30 then 'obese'
+			 else 'Unknown' end as BMI_cat,
+		a."Month of absence",
+		a."Day of the week",
+		a."Transportation expense",
+		a."Education",
+		a."Son",
+		a."Social drinker",
+		a."Social smoker",
+		a."Pet",
+		a."Disciplinary failure",
+		a."Age",
+		a."Work load Average/day ",
+		a."Absenteeism time in hours"
+		
+from public."Absenteeism_at_work" a
+left join public.compensation b
+on a."ID" = b."ID"
+left join public."Reasons" r
+on r."Number" = a."Reason for absence"
+
+--- to make a new table with the sql
+
+CREATE TABLE improved_data AS
+
+	SELECT
+	  a."ID",
+	  r."Reason",
+	  case when a."Month of absence" in (12,1,2) then 'winter'
+		  when a."Month of absence" in (3,4,5) then 'spring'
+		  when a."Month of absence" in (6,7,8) then 'summer'
+		  when a."Month of absence" in (9,10,11) then 'fall'
+		  ELSE 'unknown' end as Season_Names,
+	  a."Body mass index",
+	  case when a."Body mass index" < 18.5 then 'underweight'
+		  when a."Body mass index" between 18.5 and 24.9 then 'healthy weight'
+		  when a."Body mass index" between 25 and 29.9 then 'overweight'
+		  when a."Body mass index" > 30 then 'obese'
+		  else 'Unknown' end as BMI_cat,
+	  a."Month of absence",
+	  a."Day of the week",
+	  a."Transportation expense",
+	  a."Education",
+	  a."Son",
+	  a."Social drinker",
+	  a."Social smoker",
+	  a."Pet",
+	  a."Disciplinary failure",
+	  a."Age",
+	  a."Work load Average/day ",
+	  a."Absenteeism time in hours"
+	FROM public."Absenteeism_at_work" a
+	LEFT JOIN public."compensation" b
+	ON a."ID" = b."ID"
+	LEFT JOIN public."Reasons" r
+	ON r."Number" = a."Reason for absence";
